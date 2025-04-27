@@ -101,17 +101,18 @@ const addMultipleVectors = async () => {
 // addMultipleVectors().catch(console.error);
 
 //特定の状況を追加する
-const searchSpecificSituation = async (user_id: number) => {
+const searchSpecificSituation = async (user_id: number, date: string) => {
   await client.upsert("diary_entries", {
     points: [
       {
         id: 111111111,
-        vector: Array.from({ length: 1536 }, () => Math.random()),
+        vector: Array.from({ length: 1536 }, () => Math.random()), //実際はEmbeddingを使う
         payload: {
           text: "友達に裏切られて辛い",
           user_id: user_id,
           emotion_level: 4,
           tags: ["友人関係"],
+          date: date,
           created_at: new Date().toISOString(),
         },
       },
@@ -124,7 +125,7 @@ const searchSimilarSituations = async (user_id: number) => {
   const queryVector = Array.from({ length: 1536 }, () => Math.random());
 
   const result = await client.search("diary_entries", {
-    vector: queryVector,
+    vector: queryVector, //実際はEmbeddingを使う
     filter: {
       must: [
         {
@@ -149,5 +150,5 @@ const searchSimilarSituations = async (user_id: number) => {
   console.log("検索結果", result);
 };
 
-searchSpecificSituation(1).catch(console.error);
+searchSpecificSituation(1, "2025-4-27").catch(console.error);
 searchSimilarSituations(1).catch(console.error);
