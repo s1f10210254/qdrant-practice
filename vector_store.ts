@@ -1,7 +1,5 @@
 import { QdrantClient } from "@qdrant/js-client-rest";
 import { generateEmbedding } from "./embedding";
-import { DiaryEntryPayload } from "./interfaces";
-import test from "node:test";
 
 const client = new QdrantClient({ host: "localhost", port: 6333 });
 const collectionName = "diary_entries";
@@ -13,6 +11,15 @@ export const saveEntryToVectorStore = async (
   tags: string[] = []
 ) => {
   try {
+    if (!client.collectionExists(collectionName)) {
+      client.createCollection(collectionName, {
+        vectors: {
+          size: 1536,
+          distance: "Cosine",
+        },
+      });
+    }
+
     const embedding = await generateEmbedding(text);
 
     const point = {
